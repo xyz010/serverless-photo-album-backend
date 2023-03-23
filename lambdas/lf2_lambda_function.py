@@ -15,7 +15,7 @@ def photos_suggestions(intent_request):
     Performs image retrieval based on keywords
     TODO: should I use a try?
     """
-    q = event['queryStringParameters']['q']
+    q = intent_request['queryStringParameters']['q']
     print('query', q)
     client = boto3.client('lexv2-runtime', region_name='us-east-1')
     response = client.recognize_text(
