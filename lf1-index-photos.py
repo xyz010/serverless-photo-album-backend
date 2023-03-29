@@ -8,7 +8,7 @@ import requests
 REGION = 'us-east-1'
 # HOST = 'search-photos-cf.us-east-1.es.amazonaws.com'
 INDEX = 'photos-cf'
-# hey this is a test
+# hey this is a test, second test
 
 
 def lambda_handler(event, context):
