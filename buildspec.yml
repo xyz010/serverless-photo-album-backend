@@ -39,11 +39,14 @@ phases:
       - cd package
       - zip -r ../deployment1.zip .
       - cd ..
-      - zip deployment1.zip lf1-index-photos.py
+      - cp lf1-index-photos.py lambda_function.py
+      - zip deployment1.zip lambda_function.py
+      - rm lambda_function.py
+      - cp lf2-search-photos.py lambda_function.py
       - cd package
       - zip -r ../deployment2.zip .
       - cd ..
-      - zip deployment2.zip lf2-search-photos.py
+      - zip deployment2.zip lambda_function.py
  
   #post_build:
     #commands:
