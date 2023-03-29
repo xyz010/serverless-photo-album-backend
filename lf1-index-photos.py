@@ -6,8 +6,8 @@ from botocore.exceptions import ClientError
 import requests
 
 REGION = 'us-east-1'
-HOST = 'search-photos-eaer4juf2onevj7sztagvxxoqi.us-east-1.es.amazonaws.com'
-INDEX = 'photos'
+# HOST = 'search-photos-cf.us-east-1.es.amazonaws.com'
+INDEX = 'photos-cf'
 
 
 def lambda_handler(event, context):
@@ -41,8 +41,11 @@ def lambda_handler(event, context):
 
 def post(document, key):
     awsauth = get_awsauth(REGION, 'es')
+    client = boto3.client('opensearch')
+    host = client.describe_domain(DomainName=INDEX)['DomainStatus']['Endpoint']
+    
     es_client = OpenSearch(hosts=[{
-        'host': HOST,
+        'host': host,
         'port': 443
     }],
         http_auth=awsauth,
