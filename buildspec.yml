@@ -47,6 +47,7 @@ phases:
       - zip -r ../deployment2.zip .
       - cd ..
       - zip deployment2.zip lambda_function.py
+      - rm lambda_function.py
  
   #post_build:
     #commands:
