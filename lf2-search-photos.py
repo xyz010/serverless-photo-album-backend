@@ -10,7 +10,7 @@ from opensearchpy import OpenSearch, RequestsHttpConnection
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 
-HOST = 'search-photos-eaer4juf2onevj7sztagvxxoqi.us-east-1.es.amazonaws.com'
+# HOST = 'search-photos-eaer4juf2onevj7sztagvxxoqi.us-east-1.es.amazonaws.com'
 INDEX = 'photos'
 
 def lambda_handler(event, context):
@@ -24,18 +24,22 @@ def lambda_handler(event, context):
     # return dispatch(query)
     return photos_suggestions(query)
 
-def dispatch(intent_request):
-    logger.debug(intent_request)
-    # intent_name = intent_request['sessionState']['intent']['name']
-    if intent_name == 'SearchIntent':
-        logger.debug('dispatch sessionId={}, intentName={}'.format(
-            intent_request['sessionId'], intent_request['sessionState']['intent']['name']
-        )
-        )
-        return photos_suggestions(intent_request)
-    else:
-        raise Exception('Intent with name {} is not supported'.format(intent_name))
-    return photos_suggestions(intent_request)
+# def dispatch(intent_request):
+#     logger.debug(intent_request)
+#     intent_name = intent_request['sessionState']['intent']['name']
+#     if intent_name == 'SearchIntent':
+#         logger.debug('dispatch sessionId={}, intentName={}'
+#         .format(intent_request['sessionId'], intent_request['sessionState']['intent']['name']))
+#         return photos_suggestions(intent_request)
+#     else:
+#         return {
+#             'statusCode': 200,
+#             'headers': {
+#                 "Access-Control-Allow-Origin": "*",
+#                 'Content-Type': 'application/json'
+#             },
+#             'body': json.dumps("Query not supported")
+#         }
 
 def photos_suggestions(intent_request):
     """
@@ -55,35 +59,46 @@ def photos_suggestions(intent_request):
             text=q
         )
         print("Bot Response: {}".format(json.dumps(response)))
-        slots = [response['sessionState']['intent']['slots']['query1']['value']['resolvedValues'][0]]
-        if response['sessionState']['intent']['slots']['query2']:
-            slots.append(response['sessionState']['intent']['slots']['query2']['value']['resolvedValues'][0])
-        print("Incoming Slots from Lex are {}".format(slots))
+        intent_name = response['sessionState']['intent']['name']
+        if intent_name == 'SearchIntent':
+            slots = [response['sessionState']['intent']['slots']['query1']['value']['resolvedValues'][0]]
+            if response['sessionState']['intent']['slots']['query2']:
+                slots.append(response['sessionState']['intent']['slots']['query2']['value']['resolvedValues'][0])
+            print("Incoming Slots from Lex are {}".format(slots))
 
-        for query_word in slots:
-            # for every query word get url from elastic search
-            # append the url_list
-            url_list += retrieve_url_from_opensearch(query_word)
+            for query_word in slots:
+                # for every query word get url from elastic search
+                # append the url_list
+                url_list += retrieve_url_from_opensearch(query_word)
 
-    # now return the images
-    if url_list:
-        return {
-            'statusCode': 200,
-            'headers': {
-                "Access-Control-Allow-Origin": "*",
-                'Content-Type': 'application/json'
-            },
-            'body': json.dumps(url_list)
-        }
-    else:
-        return {
-            'statusCode': 200,
-            'headers': {
-                "Access-Control-Allow-Origin": "*",
-                'Content-Type': 'application/json'
-            },
-            'body': json.dumps("There were no keyword hits in our database")
-        }
+            # now return the images
+            if url_list:
+                return {
+                    'statusCode': 200,
+                    'headers': {
+                        "Access-Control-Allow-Origin": "*",
+                        'Content-Type': 'application/json'
+                    },
+                    'body': json.dumps(url_list)
+                }
+            else:
+                return {
+                    'statusCode': 200,
+                    'headers': {
+                        "Access-Control-Allow-Origin": "*",
+                        'Content-Type': 'application/json'
+                    },
+                    'body': json.dumps("There were no keyword hits in our database")
+                }
+        else:
+            return {
+                'statusCode': 200,
+                'headers': {
+                    "Access-Control-Allow-Origin": "*",
+                    'Content-Type': 'application/json'
+                },
+                'body': json.dumps("Query not supported")
+            }
 
 
 def retrieve_url_from_opensearch(query_word):
@@ -100,8 +115,11 @@ def retrieve_url_from_opensearch(query_word):
         }
     }
     
+    es_client = boto3.client('opensearch')
+    host = es_client.describe_domain(DomainName=INDEX)['DomainStatus']['Endpoint']
+    
     client = OpenSearch(hosts=[{
-        'host': HOST,
+        'host': host,
         'port': 443
     }],
     http_auth=awsauth,
