@@ -7,7 +7,9 @@ import requests
 
 REGION = 'us-east-1'
 # HOST = 'search-photos-cf.us-east-1.es.amazonaws.com'
-INDEX = 'photos-cf'
+INDEX = 'photos'
+
+
 # hey this is a test, second test
 
 
@@ -20,14 +22,16 @@ def lambda_handler(event, context):
     bucket_name = 'bucketb2'
     metadata = s3client.head_object(Bucket=bucket_name, Key=photo_name)
     httpheaders = metadata['ResponseMetadata']['HTTPHeaders']
-    if 'x-amz-meta-customLabels' in httpheaders.keys():
-        labels.extend(httpheaders['x-amz-meta-customLabels'])
+    if 'x-amz-meta-customlabels' in httpheaders.keys():
+        customLabels = httpheaders['x-amz-meta-customlabels']
+        for label in customLabels.split(","):
+            labels.append(label.strip())
 
     detect_labels_response = rekognition_client.detect_labels(
         Image={'S3Object': {'Bucket': bucket_name, 'Name': photo_name}})
     for label in detect_labels_response['Labels']:
         labels.append(label['Name'])
-
+    print(labels)
     object = {
         'objectKey': photo_name,
         'bucket': bucket_name,
@@ -37,14 +41,13 @@ def lambda_handler(event, context):
     }
     post(object, photo_name)
     return object
-    
 
 
 def post(document, key):
     awsauth = get_awsauth(REGION, 'es')
     client = boto3.client('opensearch')
     host = client.describe_domain(DomainName=INDEX)['DomainStatus']['Endpoint']
-    
+
     es_client = OpenSearch(hosts=[{
         'host': host,
         'port': 443
@@ -62,7 +65,6 @@ def post(document, key):
             }
         }
     }
-
 
     res = es_client.index(index=INDEX, id=key, body=document)
     print(res)
