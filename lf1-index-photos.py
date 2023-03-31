@@ -7,6 +7,7 @@ import requests
 
 REGION = 'us-east-1'
 INDEX = 'photos-cf'
+BUCKET_NAME = 'bucketb2-cf'
 
 def lambda_handler(event, context):
     s3client = boto3.client('s3')
@@ -14,8 +15,7 @@ def lambda_handler(event, context):
 
     labels = []
     photo_name = event['Records'][0]['s3']['object']['key']
-    bucket_name = 'bucketb2-cf'
-    metadata = s3client.head_object(Bucket=bucket_name, Key=photo_name)
+    metadata = s3client.head_object(Bucket=BUCKET_NAME, Key=photo_name)
     httpheaders = metadata['ResponseMetadata']['HTTPHeaders']
     if 'x-amz-meta-customlabels' in httpheaders.keys():
         customLabels = httpheaders['x-amz-meta-customlabels']
@@ -23,13 +23,13 @@ def lambda_handler(event, context):
             labels.append(label.strip())
 
     detect_labels_response = rekognition_client.detect_labels(
-        Image={'S3Object': {'Bucket': bucket_name, 'Name': photo_name}})
+        Image={'S3Object': {'Bucket': BUCKET_NAME, 'Name': photo_name}})
     for label in detect_labels_response['Labels']:
         labels.append(label['Name'])
     print(labels)
     object = {
         'objectKey': photo_name,
-        'bucket': bucket_name,
+        'bucket': BUCKET_NAME,
         'createdTimestamp': str(metadata['LastModified']),
         'labels': labels
     }
