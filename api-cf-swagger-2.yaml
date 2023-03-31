@@ -39,7 +39,7 @@ paths:
       x-amazon-apigateway-integration:
         type: "aws_proxy"
         httpMethod: "POST"
-        uri: "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:783455253012:function:LF2-search-photos/invocations"
+        uri: "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:783455253012:function:LF2-search-photos-cf/invocations"
         responses:
           default:
             statusCode: "200"
