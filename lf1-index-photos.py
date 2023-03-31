@@ -6,12 +6,7 @@ from botocore.exceptions import ClientError
 import requests
 
 REGION = 'us-east-1'
-# HOST = 'search-photos-cf.us-east-1.es.amazonaws.com'
-INDEX = 'photos'
-
-
-# hey this is a test, second test
-
+INDEX = 'photos-cf'
 
 def lambda_handler(event, context):
     s3client = boto3.client('s3')
@@ -19,7 +14,7 @@ def lambda_handler(event, context):
 
     labels = []
     photo_name = event['Records'][0]['s3']['object']['key']
-    bucket_name = 'bucketb2'
+    bucket_name = 'bucketb2-cf'
     metadata = s3client.head_object(Bucket=bucket_name, Key=photo_name)
     httpheaders = metadata['ResponseMetadata']['HTTPHeaders']
     if 'x-amz-meta-customlabels' in httpheaders.keys():
@@ -37,7 +32,6 @@ def lambda_handler(event, context):
         'bucket': bucket_name,
         'createdTimestamp': str(metadata['LastModified']),
         'labels': labels
-
     }
     post(object, photo_name)
     return object
