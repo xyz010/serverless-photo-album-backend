@@ -44,7 +44,9 @@ def photos_suggestions(intent_request):
             for query_word in slots:
                 # for every query word get url from elastic search
                 # append the url_list
-                url_list += retrieve_url_from_opensearch(query_word)
+                url_response = retrieve_url_from_opensearch(query_word)
+                if url_response not in url_list:
+                    url_list += url_response
 
             # now return the images
             if url_list:
