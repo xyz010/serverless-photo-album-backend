@@ -11,6 +11,8 @@ logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 
 INDEX = 'photos-cf'
+BUCKET_NAME = 'bucketb2-cf'
+
 
 def lambda_handler(event, context):
     # By default, treat the user request as coming from the America/New_York time zone.
@@ -111,6 +113,6 @@ def retrieve_url_from_opensearch(query_word):
     for hit in hits:
         hit_labels = [w.lower() for w in hit['_source']['labels']]
         if query_word in hit_labels:
-            url_photo_list.append('https://bucketb2-cf.s3.amazonaws.com/' + hit['_source']['objectKey'])
+            url_photo_list.append('https://'+BUCKET_NAME+'.s3.amazonaws.com/' + hit['_source']['objectKey'])
 
     return url_photo_list
