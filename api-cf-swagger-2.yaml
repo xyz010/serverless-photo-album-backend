@@ -89,10 +89,6 @@ paths:
         in: "header"
         required: false
         type: "string"
-      - name: "Accept"
-        in: "header"
-        required: false
-        type: "string"
       - name: "object"
         in: "path"
         required: false
@@ -133,7 +129,6 @@ paths:
               method.response.header.Access-Control-Allow-Origin: "'*'"
         requestParameters:
           integration.request.path.object: "method.request.path.object"
-          integration.request.header.Accept: "method.request.header.Accept"
           integration.request.header.x-amz-meta-customlabels: "method.request.header.x-amz-meta-customlabels"
           integration.request.path.bucket: "method.request.path.bucket"
           integration.request.header.Content-Type: "method.request.header.Content-Type"
