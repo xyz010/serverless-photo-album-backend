@@ -1,10 +1,10 @@
 ---
 swagger: "2.0"
 info:
-  description: "AI Photo Search application, built during the Cloud and Big Data course\
+  description: "AI Photo Search application, built using Cloud Formation during the Cloud and Big Data course\
     \ at Columbia University."
   version: "1.0.0"
-  title: "AI Photo Search"
+  title: "AI Photo Search - CF"
 basePath: "/v1"
 schemes:
 - "https"
@@ -87,7 +87,7 @@ paths:
         type: "string"
       - name: "Content-Type"
         in: "header"
-        required: true
+        required: false
         type: "string"
       - name: "Accept"
         in: "header"
@@ -95,11 +95,11 @@ paths:
         type: "string"
       - name: "object"
         in: "path"
-        required: true
+        required: false
         type: "string"
       - name: "bucket"
         in: "path"
-        required: true
+        required: false
         type: "string"
       responses:
         "200":
@@ -153,11 +153,11 @@ paths:
         type: "string"
       - name: "bucket"
         in: "path"
-        required: true
+        required: false
         type: "string"
       - name: "object"
         in: "path"
-        required: true
+        required: false
         type: "string"
       responses:
         "200":
