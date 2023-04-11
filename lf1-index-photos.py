@@ -5,6 +5,7 @@ from requests_aws4auth import AWS4Auth
 from botocore.exceptions import ClientError
 import requests
 
+
 REGION = 'us-east-1'
 INDEX = 'photos-cf'
 BUCKET_NAME = 'bucketb2-cf'
