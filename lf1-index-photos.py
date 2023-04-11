@@ -11,6 +11,7 @@ INDEX = 'photos-cf'
 BUCKET_NAME = 'bucketb2-cf'
 
 def lambda_handler(event, context):
+    # Sample comment for testing
     s3client = boto3.client('s3')
     rekognition_client = boto3.client('rekognition')
 
